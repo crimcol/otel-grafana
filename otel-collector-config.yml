@@ -19,7 +19,7 @@ processors:
 
 exporters:
   prometheus: # metrics
-    endpoint: "0.0.0.0:8889"
+    endpoint: otelcollector:8889
     namespace: demo
     send_timestamps: true
     resource_to_telemetry_conversion:
@@ -27,7 +27,7 @@ exporters:
     const_labels:
       exported: "collector"
   
-  otlp/tempo:
+  otlp:
     endpoint: tempo:4317
     tls:
       insecure: true
@@ -55,7 +55,7 @@ service:
     traces:
       receivers: [ otlp ]
       processors: [ batch ]
-      exporters: [ otlp/tempo, zipkin ]
+      exporters: [ otlp, zipkin ]
     
     logs:
       receivers: [ otlp ]
