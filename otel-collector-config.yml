@@ -1,15 +1,16 @@
 receivers:
   otlp:
     protocols:
-      http:
+      http: null
       grpc:
 
+        null
 processors:
   resource:
     attributes:
       # - action: insert
-        # key: loki.format
-        # value: raw
+      # key: loki.format
+      # value: raw
       - action: insert
         key: loki.resource.labels
         value: app, runtime
@@ -18,46 +19,57 @@ processors:
     send_batch_size: 1024
 
 exporters:
-  prometheus: # metrics
+  prometheus:
+    # metrics
     endpoint: otelcollector:8889
     namespace: demo
     send_timestamps: true
     resource_to_telemetry_conversion:
       enabled: true
     const_labels:
-      exported: "collector"
-  
+      exported: collector
+
   otlp:
     endpoint: tempo:4317
     tls:
       insecure: true
-  
+
   loki:
     endpoint: http://loki:3100/loki/api/v1/push
     tls:
       insecure: true
-      
-  # otlp/jaeger:
-    # protocols:
+      # otlp/jaeger:
+      # protocols:
       # grpc:
-        # endpoint: "http://jaeger:14250"
+      # endpoint: "http://jaeger:14250"
   zipkin:
-    endpoint: "http://zipkin:9411/api/v2/spans"
+    endpoint: http://zipkin:9411/api/v2/spans
 
 service:
   pipelines:
-    
+
     metrics:
-      receivers: [ otlp ]
-      processors: [ batch ]
-      exporters: [ prometheus ]
-    
+      receivers:
+        - otlp
+      processors:
+        - batch
+      exporters:
+        - prometheus
+
     traces:
-      receivers: [ otlp ]
-      processors: [ batch ]
-      exporters: [ otlp, zipkin ]
-    
+      receivers:
+        - otlp
+      processors:
+        - batch
+      exporters:
+        - otlp
+        - zipkin
+
     logs:
-      receivers: [ otlp ]
-      processors: [ batch, resource ]
-      exporters: [ loki ]
+      receivers:
+        - otlp
+      processors:
+        - batch
+        - resource
+      exporters:
+        - loki
