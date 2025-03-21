@@ -1,38 +1,40 @@
 server:
   http_listen_port: 3200
+  grpc_listen_port: 9096
 
 distributor:
-  receivers:      # this configuration will listen on all ports and protocols that tempo is capable of.     
-    otlp:         # the receives all come from the OpenTelemetry collector.  more configuration information can
-      protocols:  # be found there: https://github.com/open-telemetry/opentelemetry-collector/tree/main/receiver
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: "0.0.0.0:4417"
         http:
-        grpc:    
+          endpoint: "0.0.0.0:4418"
 
-ingester:
-  max_block_duration: 5m               # cut the headblock when this much time passes. this is being set for demo purposes and should probably be left alone normally
-
-compactor:
-  compaction:
-    block_retention: 1h                # overall Tempo trace retention. set for demo purposes
+storage:
+  trace:
+    backend: local
+    wal:
+      path: /data/tempo/wal
+    local:
+      path: /data/tempo/blocks
 
 metrics_generator:
-  registry:
-    external_labels:
-      source: tempo
-      cluster: docker-compose
+  processor:
+    local_blocks:
+      filter_server_spans: false
+    span_metrics:
+      dimensions:
+        - service_name
+        - operation
+        - status_code
+  traces_storage:
+    path: /data/tempo/generator/traces
   storage:
-    path: /tmp/tempo/generator/wal
+    path: /data/tempo/generator/wal
     remote_write:
       - url: http://prometheus:9090/api/v1/write
         send_exemplars: true
 
-storage:
-  trace:
-    backend: local                     # backend configuration to use
-    wal:
-      path: /tmp/tempo/wal             # where to store the the wal locally
-    local:
-      path: /tmp/tempo/blocks
-
 overrides:
-  metrics_generator_processors: [service-graphs, span-metrics] # enables metrics generator
+  metrics_generator_processors: [service-graphs, local-blocks, span-metrics]
