@@ -1,19 +1,47 @@
-
 services:
+  # Tempo and Loki runs as user 10001, and docker compose creates the volume as root.
+  # As such, we need to chown the volume in order for Tempo to start correctly.
+  init:
+    image: busybox
+    user: root
+    entrypoint: ["/bin/sh", "-c"]
+    command: 
+    - |
+      chown 10001:10001 /data/tempo
+      chown 10001:10001 /data/loki
+    volumes:
+      - tempo_data:/data/tempo
+      - loki_data:/data/loki
+
+  tempo:
+    image: grafana/tempo:2.7.1
+    container_name: tempo
+    command: [ "-config.file=/etc/tempo.yml" ]
+    volumes:
+      - ./tempo.yml:/etc/tempo.yml
+      - tempo_data:/data/tempo
+    ports:
+      - 3200:3200 # tempo
+      - 4417:4417 # otlp grpc
+      - 4418:4418 # otlp http
+    depends_on:
+      - init
+    restart: unless-stopped
+
   loki:
-    image: grafana/loki:2.9.8
+    image: grafana/loki:3.4.2
+    command: [ "-config.file=/etc/loki/local-config.yaml" ]
+    volumes:
+      - loki_data:/data/loki
+      - ./loki-config.yml:/etc/loki/local-config.yaml:ro
     ports:
       - "3100:3100"
-    volumes:
-      - loki_data:/loki/
-      - ./loki-config.yml:/etc/loki/local-config.yaml:ro
-    command: -config.file=/etc/loki/local-config.yaml
     depends_on:
-      - minio
+      - init
     restart: unless-stopped
       
   prometheus:
-    image: prom/prometheus:v2.53.0
+    image: prom/prometheus:v3.2.1
     container_name: prometheus
     ports:
       - 9090:9090
@@ -21,30 +49,16 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--web.enable-remote-write-receiver'
+      - '--web.enable-otlp-receiver'
       - '--enable-feature=exemplar-storage'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
+      - '--enable-feature=native-histograms'
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     restart: unless-stopped
-  
-  tempo:
-    image: grafana/tempo:2.1.1
-    container_name: tempo
-    command: [ "-config.file=/etc/tempo.yml" ]
-    volumes:
-      - ./tempo.yml:/etc/tempo.yml
-      - tempo_data:/tmp/tempo
-    restart: unless-stopped
-#    ports:      
-#      - "3200:3200"   # tempo      
-#      - "4317:4317"  # otlp grpc
-#      - "4318:4318"  # otlp http
       
   grafana:
-    image: grafana/grafana:11.1.5
+    image: grafana/grafana:11.5.2
     container_name: grafana
     environment:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
@@ -54,6 +68,7 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana/
       - ./ds.yaml:/etc/grafana/provisioning/datasources/ds.yaml
+      - ./dashboards:/etc/grafana/provisioning/dashboards
     ports:
       - "3000:3000"
     restart: unless-stopped
@@ -61,26 +76,6 @@ services:
       - prometheus
       - tempo
       - loki
-
-  minio:
-    image: minio/minio
-    entrypoint:
-      - sh
-      - -euc
-      - |
-        mkdir -p /data/loki-data && \
-        mkdir -p /data/loki-ruler && \
-        minio server /data
-    environment:
-      - MINIO_ROOT_USER=loki
-      - MINIO_ROOT_PASSWORD=supersecret
-      - MINIO_PROMETHEUS_AUTH_TYPE=public
-      - MINIO_UPDATE=off
-    ports:
-      - "9000"
-    volumes:
-      - minio_data:/data/
-    restart: unless-stopped
   
   otel-collector:
     container_name: otelcollector
@@ -101,27 +96,9 @@ services:
       - "4318:4318" # OTLP http receiver
     #   - 55679:55679 # zpages extension
     restart: unless-stopped
-
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    ports:
-      - "6831:6831/udp" # Jaeger Thrift UDP receiver
-      - "6832:6832/udp" # Jaeger Thrift UDP receiver for Compact format
-      - "5778:5778"     # Jaeger config rest port
-      - "16686:16686"   # Jaeger UI
-      - "14268:14268"   # Jaeger HTTP receiver
-      - "14250:14250"   # Jaeger gRPC receiver
-    restart: unless-stopped
-
-  zipkin:
-    image: openzipkin/zipkin
-    ports:
-      - "9411:9411" # Zipkin web UI and HTTP receiver
-    restart: unless-stopped
     
 volumes:
   grafana_data:
   loki_data:
   prometheus_data:
   tempo_data:
-  minio_data:
