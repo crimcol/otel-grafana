@@ -22,6 +22,8 @@ datasources:
       tracesToLogsV2:
         customQuery: true
         datasourceUid: "loki"
+        spanStartTimeShift: '-10m'
+        spanEndTimeShift: '10m'
         query: '{$${__tags}} | trace_id = "$${__trace.traceId}"'
         tags:
           - key: "service.name"

@@ -25,7 +25,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 2,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -156,7 +156,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.50, sum(rate(http_server_request_duration_seconds_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.50, sum(rate(http_server_request_duration_seconds_bucket{$metric_filter}[$__rate_interval])) by (le))",
           "legendFormat": "p50",
           "range": true,
           "refId": "p50"
@@ -167,7 +167,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.75, sum(rate(http_server_request_duration_seconds_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.75, sum(rate(http_server_request_duration_seconds_bucket{$metric_filter}[$__rate_interval])) by (le))",
           "hide": false,
           "legendFormat": "p75",
           "range": true,
@@ -179,7 +179,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.90, sum(rate(http_server_request_duration_seconds_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.90, sum(rate(http_server_request_duration_seconds_bucket{$metric_filter}[$__rate_interval])) by (le))",
           "hide": false,
           "legendFormat": "p90",
           "range": true,
@@ -191,7 +191,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{$metric_filter}[$__rate_interval])) by (le))",
           "hide": false,
           "legendFormat": "p95",
           "range": true,
@@ -203,7 +203,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.99, sum(rate(http_server_request_duration_seconds_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.99, sum(rate(http_server_request_duration_seconds_bucket{$metric_filter}[$__rate_interval])) by (le))",
           "hide": false,
           "legendFormat": "p99",
           "range": true,
@@ -215,7 +215,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.999, sum(rate(http_server_request_duration_seconds_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.999, sum(rate(http_server_request_duration_seconds_bucket{$metric_filter}[$__rate_interval])) by (le))",
           "hide": false,
           "legendFormat": "p99.9",
           "range": true,
@@ -373,7 +373,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(http_server_request_duration_seconds_bucket{job=\"$job\", instance=\"$instance\", http_response_status_code=~\"4..|5..\"}[$__rate_interval]) or vector(0)) / sum(rate(http_server_request_duration_seconds_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval]))",
+          "expr": "sum(rate(http_server_request_duration_seconds_bucket{$metric_filter, http_response_status_code=~\"4..|5..\"}[$__rate_interval]) or vector(0)) / sum(rate(http_server_request_duration_seconds_bucket{$metric_filter}[$__rate_interval]))",
           "legendFormat": "All",
           "range": true,
           "refId": "All"
@@ -384,7 +384,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(http_server_request_duration_seconds_bucket{job=\"$job\", instance=\"$instance\", http_response_status_code=~\"4..\"}[$__rate_interval]) or vector(0)) / sum(rate(http_server_request_duration_seconds_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval]))",
+          "expr": "sum(rate(http_server_request_duration_seconds_bucket{$metric_filter, http_response_status_code=~\"4..\"}[$__rate_interval]) or vector(0)) / sum(rate(http_server_request_duration_seconds_bucket{$metric_filter}[$__rate_interval]))",
           "hide": false,
           "legendFormat": "4XX",
           "range": true,
@@ -396,7 +396,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(http_server_request_duration_seconds_bucket{job=\"$job\", instance=\"$instance\", http_response_status_code=~\"5..\"}[$__rate_interval]) or vector(0)) / sum(rate(http_server_request_duration_seconds_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval]))",
+          "expr": "sum(rate(http_server_request_duration_seconds_bucket{$metric_filter, http_response_status_code=~\"5..\"}[$__rate_interval]) or vector(0)) / sum(rate(http_server_request_duration_seconds_bucket{$metric_filter}[$__rate_interval]))",
           "hide": false,
           "legendFormat": "5XX",
           "range": true,
@@ -495,7 +495,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(kestrel_active_connections{job=\"$job\", instance=\"$instance\"})",
+          "expr": "sum(kestrel_active_connections{$metric_filter})",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -593,7 +593,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(http_server_active_requests{job=\"$job\", instance=\"$instance\"})",
+          "expr": "sum(http_server_active_requests{$metric_filter})",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -665,7 +665,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(http_server_request_duration_seconds_count{job=\"$job\", instance=\"$instance\"})",
+          "expr": "sum(http_server_request_duration_seconds_count{$metric_filter})",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -738,7 +738,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(http_server_request_duration_seconds_count{job=\"$job\", instance=\"$instance\", error_type!=\"\"})",
+          "expr": "sum(http_server_request_duration_seconds_count{$metric_filter, error_type!=\"\"})",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -809,7 +809,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (url_scheme) (\r\n    max_over_time(http_server_request_duration_seconds_count{job=\"$job\", instance=\"$instance\"}[$__rate_interval])\r\n  )",
+          "expr": "sum by (url_scheme) (\r\n    max_over_time(http_server_request_duration_seconds_count{$metric_filter}[$__rate_interval])\r\n  )",
           "legendFormat": "{{scheme}}",
           "range": true,
           "refId": "A"
@@ -879,7 +879,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (method_route) (\r\n    label_replace(max_over_time(http_server_request_duration_seconds_count{job=\"$job\", instance=\"$instance\"}[$__rate_interval]), \"method_route\", \"http/$1\", \"network_protocol_version\", \"(.*)\")\r\n  )",
+          "expr": "sum by (method_route) (\r\n    label_replace(max_over_time(http_server_request_duration_seconds_count{$metric_filter}[$__rate_interval]), \"method_route\", \"http/$1\", \"network_protocol_version\", \"(.*)\")\r\n  )",
           "legendFormat": "{{protocol}}",
           "range": true,
           "refId": "A"
@@ -904,6 +904,7 @@
             "cellOptions": {
               "type": "auto"
             },
+            "filterable": false,
             "inspect": false
           },
           "mappings": [],
@@ -929,10 +930,6 @@
             },
             "properties": [
               {
-                "id": "custom.width",
-                "value": 300
-              },
-              {
                 "id": "custom.cellOptions",
                 "value": {
                   "mode": "gradient",
@@ -950,42 +947,23 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Endpoint"
+              "options": "Route"
             },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "targetBlank": false,
-                    "title": "Test",
-                    "url": "/d/NagEsjE4z/asp-net-core-endpoint-details?var-route=${__data.fields.http_route}&var-method=${__data.fields.http_request_method}&${__url_time_range}"
-                  }
-                ]
-              }
-            ]
+            "properties": []
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "http_route"
+              "options": "Method"
             },
             "properties": [
               {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "http_request_method"
-            },
-            "properties": [
+                "id": "custom.width",
+                "value": 70
+              },
               {
-                "id": "custom.hidden",
-                "value": true
+                "id": "custom.align",
+                "value": "right"
               }
             ]
           }
@@ -1009,12 +987,7 @@
           "show": false
         },
         "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Value"
-          }
-        ]
+        "sortBy": []
       },
       "pluginVersion": "11.5.2",
       "targets": [
@@ -1025,7 +998,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "  topk(10,\r\n  sum by (http_route, http_request_method, method_route) (\r\n    label_join(max_over_time(http_server_request_duration_seconds_count{job=\"$job\", instance=\"$instance\", http_route!=\"\"}[$__rate_interval]), \"method_route\", \" \", \"http_request_method\", \"http_route\")\r\n  ))",
+          "expr": "  topk(10,\r\n  sum by (http_route, http_request_method) (\r\n    max_over_time(http_server_request_duration_seconds_count{$metric_filter}[$__rate_interval])\r\n  ))",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -1041,18 +1014,24 @@
           "options": {
             "excludeByName": {
               "Time": true,
+              "Value": false,
+              "http_request_method": false,
+              "http_route": false,
               "method": false,
+              "method_route": false,
               "route": false
             },
+            "includeByName": {},
             "indexByName": {
               "Time": 0,
-              "Value": 4,
-              "method": 2,
-              "method_route": 3,
-              "route": 1
+              "Value": 3,
+              "http_request_method": 1,
+              "http_route": 2
             },
             "renameByName": {
               "Value": "Requests",
+              "http_request_method": "Method",
+              "http_route": "Route",
               "method": "",
               "method_route": "Endpoint",
               "route": ""
@@ -1198,7 +1177,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "  topk(10,\r\n  sum by (http_route, http_request_method, method_route) (\r\n    label_join(max_over_time(http_server_request_duration_seconds_count{job=\"$job\", instance=\"$instance\", http_route!=\"\", error_type!=\"\"}[$__rate_interval]), \"method_route\", \" \", \"http_request_method\", \"http_route\")\r\n  ))",
+          "expr": "  topk(10,\r\n  sum by (http_route, http_request_method, method_route) (\r\n    label_join(max_over_time(http_server_request_duration_seconds_count{$metric_filter, http_route!=\"\", error_type!=\"\"}[$__rate_interval]), \"method_route\", \" \", \"http_request_method\", \"http_route\")\r\n  ))",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -1292,6 +1271,29 @@
         "type": "query"
       },
       {
+        "current": {
+          "text": "job=\"PerformanceTest.API.Controllers\"",
+          "value": "job=\"PerformanceTest.API.Controllers\""
+        },
+        "hide": 2,
+        "label": "Metric Filter",
+        "name": "metric_filter",
+        "options": [
+          {
+            "selected": true,
+            "text": "job=\"PerformanceTest.API.Controllers\"",
+            "value": "job=\"PerformanceTest.API.Controllers\""
+          },
+          {
+            "selected": false,
+            "text": "instance=\"2025_0407_1516_41\"",
+            "value": "instance=\"2025_0407_1516_41\""
+          }
+        ],
+        "query": "job=\"$job\", instance=\"$instance\"",
+        "type": "custom"
+      },
+      {
         "baseFilters": [],
         "datasource": {
           "type": "prometheus",
@@ -1304,13 +1306,13 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
-  "title": "ASP.NET Core 2",
+  "title": "ASP.NET Core",
   "uid": "KdDACDp4z2",
-  "version": 1,
+  "version": 22,
   "weekStart": ""
 }
