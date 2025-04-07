@@ -1,14 +1,22 @@
-## Local Grafana + Tempo + Loki
+## Grafana + Tempo + Loki + Prometheus
 
-You can use `docker-compose.yml` file to run all required application to be able to see logs and traces locally.
+- Grafana - Dashboard visualization
+- Tempo - Traces
+- Loki - Logs
+- Prometheus - Metrics
 
-#### Steps:
-* Open CMD in the current folder
-* Run command `docker-compose up -d`
-    * If you want to re-run: 
-        * CMD: `docker-compose down && docker-compose up -d`
-        * PowerShell: `docker-compose down; docker-compose up -d`
-* Navigate to Grafana dashboard: http://localhost:3000/
-* Navigate to menu `Explore`.
-* Use `Tempo` to see traces.
-* Use `Loki` to see logs.
+### Built-in Dashboards
+- ASP.NET Core
+- ASP.NET OpenTelemetry dotnet webapi
+- ASP.NET OTEL Metrics
+
+### Steps to Run:
+1. Open CMD or PowerShell in the current folder.
+1. Run `docker-compose up -d` to start the services.
+    - To restart the services:
+        - CMD: `docker-compose down && docker-compose up -d`
+        - PowerShell: `docker-compose down; docker-compose up -d`
+1. Open your browser and navigate to the Grafana dashboard: [http://localhost:3000/](http://localhost:3000/).
+1. Use the `Explore` or `Dashboards` menu in Grafana:
+    - Use `Tempo` to view traces.
+    - Use `Loki` to view logs.
