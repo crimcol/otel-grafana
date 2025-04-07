@@ -7,7 +7,7 @@ datasources:
     url: http://prometheus:9090
     editable: true
     jsonData:
-      timeInterval: 60s
+      timeInterval: 5s
       exemplarTraceIdDestinations:
         - name: trace_id
           datasourceUid: tempo
