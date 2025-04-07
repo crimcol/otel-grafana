@@ -20,3 +20,8 @@
 1. Use the `Explore` or `Dashboards` menu in Grafana:
     - Use `Tempo` to view traces.
     - Use `Loki` to view logs.
+
+
+### Run ASP.NET Minimal API demo project
+1. Open and build demo project `demo/asp.net_demo`
+1. Use endpoint `http://localhost:5194/externaldata/`
